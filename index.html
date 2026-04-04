@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Women's Health AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+
+<body>
+
+<header>
+  <h2>Women's Health AI</h2>
+  <p class="sub">Private • Smart • Simple</p>
+</header>
+
+<div class="container">
+
+  <!-- HOME -->
+  <div id="home" class="card">
+    <h3>Enter Basic Details</h3>
+
+    <input id="age" placeholder="Age">
+    <input id="height" placeholder="Height (cm)">
+    <input id="weight" placeholder="Weight (kg)">
+
+    <button onclick="startQuiz()">Start Health Check</button>
+
+    <p class="note">✔ No data stored • ⚠ Not medical diagnosis</p>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz" class="card" style="display:none;"></div>
+
+  <!-- CHATBOT -->
+  <div class="card">
+    <input id="chatInput" placeholder="Ask health question...">
+    <button onclick="chat()">Ask AI</button>
+    <p id="chatOutput"></p>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "Women's Health AI",
+  "short_name": "HealthAI",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6b46c1"
+}
