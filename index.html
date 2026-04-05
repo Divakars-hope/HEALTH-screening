@@ -9,41 +9,26 @@
 <body>
 
 <header>
-  <h1>Women's Health AI</h1>
-  <p>Private • Safe • AI Assisted</p>
+  <h2>Women's Health AI</h2>
+  <p>🔒 Private • No Data Stored</p>
 </header>
 
 <div class="container">
 
-  <!-- FORM -->
-  <div id="formCard" class="card">
-    <h2>Basic Details</h2>
-
-    <input id="age" placeholder="Age">
-    <input id="height" placeholder="Height (cm)">
-    <input id="weight" placeholder="Weight (kg)">
-
-    <button onclick="startQuiz()">Start Health Check</button>
+  <!-- START -->
+  <div id="startCard" class="card">
+    <h3>Start Health Check</h3>
+    <button onclick="startQuiz()">Start</button>
   </div>
 
-  <!-- QUIZ -->
+  <!-- QUESTIONS -->
   <div id="quizCard" class="card hidden"></div>
 
   <!-- RESULT -->
   <div id="resultCard" class="card hidden"></div>
 
-  <!-- CHAT -->
-  <div class="card">
-    <h3>Ask AI</h3>
-    <input id="chatInput" placeholder="Type your question...">
-    <button onclick="chat()">Ask</button>
-    <button onclick="startVoice()">🎤 Speak</button>
-    <p id="chatOutput"></p>
-  </div>
-
 </div>
 
 <script src="script.js"></script>
-
 </body>
 </html>
