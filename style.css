@@ -1,18 +1,18 @@
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background: #f2f5f9;
+  font-family: Arial;
+  background: #f4f7fb;
   margin: 0;
 }
 
 header {
-  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  background: linear-gradient(135deg, #e11d48, #7c3aed);
   color: white;
   text-align: center;
-  padding: 25px;
+  padding: 20px;
 }
 
 .container {
-  max-width: 420px;
+  max-width: 400px;
   margin: auto;
   padding: 20px;
 }
@@ -20,34 +20,24 @@ header {
 .card {
   background: white;
   padding: 20px;
-  border-radius: 18px;
-  margin-top: 20px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-  transition: 0.3s;
+  margin-top: 15px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
 
 .hidden {
   display: none;
 }
 
-input {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-}
-
 button {
   width: 100%;
   padding: 14px;
-  margin-top: 12px;
+  margin-top: 10px;
   border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  border-radius: 10px;
+  background: #e11d48;
   color: white;
-  font-size: 15px;
-  cursor: pointer;
+  font-size: 16px;
 }
 
 button:hover {
