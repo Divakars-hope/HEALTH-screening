@@ -1,29 +1,26 @@
 let step = 0;
-let answers = {};
+let answers = [];
 
+// Structured simple questions (icon + Tamil + easy)
 const questions = [
-"Are your periods irregular?",
-"Do you have facial hair growth?",
-"Do you have acne?",
-"Do you feel breast lump?",
-"Any unusual discharge?",
-"Do you feel tired often?",
-"Sudden weight gain?",
-"Hair fall?"
+{q:"🩸 Periods not regular?", ta:"மாதவிடாய் சரியாக வராதா?"},
+{q:"🧔 Facial hair growth?", ta:"முகத்தில் முடி அதிகமா?"},
+{q:"😣 Acne problem?", ta:"முகப்பரு இருக்கிறதா?"},
+{q:"⚖ Sudden weight gain?", ta:"திடீர் எடை அதிகரிக்கிறதா?"},
+{q:"🩺 Breast lump?", ta:"மார்பில் கட்டி உள்ளதா?"},
+{q:"💧 Discharge?", ta:"நீர்வருகிறதா?"},
+{q:"🔥 Burning urine?", ta:"சிறுநீர் எரிச்சலா?"},
+{q:"😴 Very tired?", ta:"அதிக சோர்வு உள்ளதா?"}
 ];
 
 // START
 function startQuiz(){
-  let age = document.getElementById("age").value;
-  if(!age){
-    alert("Enter basic details");
-    return;
-  }
-
-  document.getElementById("formCard").classList.add("hidden");
+  document.getElementById("startCard").classList.add("hidden");
   document.getElementById("quizCard").classList.remove("hidden");
 
   step = 0;
+  answers = [];
+
   showQuestion();
 }
 
@@ -32,93 +29,100 @@ function showQuestion(){
   let card = document.getElementById("quizCard");
 
   if(step < questions.length){
-    card.innerHTML = `
-      <h3>${questions[step]}</h3>
+    let q = questions[step];
 
-      <button onclick="answer('Yes')">Yes</button>
-      <button onclick="answer('No')">No</button>
+    card.innerHTML = `
+      <h3>${q.q}</h3>
+      <p style="color:gray;">${q.ta}</p>
+
+      <button onclick="answer('Yes')">👍 Yes</button>
+      <button onclick="answer('No')">👎 No</button>
     `;
+
+    speak(q.q);
+
   } else {
-    showAnalyze();
+    analyze();
   }
 }
 
-// STORE ANSWER
+// SAVE ANSWER (TEMP ONLY)
 function answer(val){
-  answers["Q"+step] = val;
+  answers.push(val);
   step++;
   showQuestion();
 }
 
-// SHOW AI BUTTON
-function showAnalyze(){
-  document.getElementById("quizCard").innerHTML = `
-    <h3>Ready for AI Analysis</h3>
-    <button onclick="analyze()">Analyze</button>
-  `;
-}
-
-// AI ANALYSIS
+// AI ANALYSIS (ANONYMOUS)
 async function analyze(){
 
   let resultCard = document.getElementById("resultCard");
   resultCard.classList.remove("hidden");
-
   resultCard.innerHTML = "Analyzing...";
 
-  let data = {
-    model: "mistralai/mistral-7b-instruct",
-    messages: [{
-      role: "user",
-      content: `Analyze this health data: ${JSON.stringify(answers)}`
-    }]
-  };
+  let prompt = `
+You are a women's health assistant.
+
+This data is anonymous.
+
+Analyze symptoms carefully.
+
+Check for:
+- PCOS
+- Breast issues
+- Hormonal imbalance
+- UTI
+
+Rules:
+- Do NOT guess blindly
+- If unsure say "uncertain"
+- Keep it simple
+
+Give:
+Condition
+Reason
+Risk
+Advice
+
+Symptoms:
+${answers.join(", ")}
+`;
 
   try{
     let res = await fetch("/api/ai", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(data)
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model:"mistralai/mistral-7b-instruct",
+        messages:[{role:"user", content:prompt}]
+      })
     });
 
-    let json = await res.json();
+    let data = await res.json();
 
     resultCard.innerHTML = `
-      <h2>AI Result</h2>
-      <p>${json.choices[0].message.content}</p>
-      <p style="color:red;">⚠ Not a medical diagnosis</p>
+      <h3>🧠 Result</h3>
+      <p>${data.choices[0].message.content}</p>
+
+      <p style="color:red;">
+      ⚠ This is only a screening. Consult a doctor.
+      </p>
+
+      <p style="font-size:12px;">
+      🔒 Your data is not stored
+      </p>
     `;
 
+    speak(data.choices[0].message.content);
+
   } catch(e){
-    resultCard.innerHTML = "AI Error";
+    resultCard.innerHTML = "AI connection error";
   }
 }
 
-// CHAT
-async function chat(){
-  let input = document.getElementById("chatInput").value;
-
-  let res = await fetch("/api/ai", {
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({
-      model:"mistralai/mistral-7b-instruct",
-      messages:[{role:"user", content:input}]
-    })
-  });
-
-  let data = await res.json();
-  document.getElementById("chatOutput").innerText =
-    data.choices[0].message.content;
-}
-
-// VOICE
-function startVoice(){
-  let rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-  rec.onresult = e => {
-    document.getElementById("chatInput").value =
-      e.results[0][0].transcript;
-    chat();
-  };
-  rec.start();
+// VOICE OUTPUT
+function speak(text){
+  let msg = new SpeechSynthesisUtterance(text);
+  msg.lang = "en-IN";
+  speechSynthesis.speak(msg);
 }
