@@ -11,8 +11,15 @@ header {
   padding: 20px;
 }
 
+.lang-toggle button {
+  margin: 5px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: none;
+}
+
 .container {
-  max-width: 400px;
+  max-width: 420px;
   margin: auto;
   padding: 20px;
 }
@@ -20,26 +27,37 @@ header {
 .card {
   background: white;
   padding: 20px;
-  margin-top: 15px;
   border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-}
-
-.hidden {
-  display: none;
+  margin-top: 15px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
 }
 
 button {
   width: 100%;
   padding: 14px;
   margin-top: 10px;
-  border: none;
   border-radius: 10px;
+  border: none;
   background: #e11d48;
   color: white;
   font-size: 16px;
 }
 
-button:hover {
-  opacity: 0.9;
+.voice {
+  width: auto;
+  font-size: 12px;
+  padding: 5px 10px;
+  background: #444;
+}
+
+.loading {
+  text-align: center;
+  font-size: 18px;
+}
+
+.result-box {
+  background: #f9fafb;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 10px;
 }
