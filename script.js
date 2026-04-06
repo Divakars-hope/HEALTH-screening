@@ -5,26 +5,31 @@ let currentSection = "";
 
 const app = document.getElementById("app");
 
-// QUESTIONS
+// ✅ STRUCTURED QUESTIONS (IMPORTANT FIX)
 const data = {
 
 pcos: [
-{en:"Are your periods irregular?", ta:"மாதவிடாய் முறையற்றதா?"},
-{en:"Do you have acne?", ta:"முகப்பரு உள்ளதா?"},
-{en:"Excess facial hair?", ta:"முகத்தில் அதிக முடி உள்ளதா?"},
-{en:"Weight gain?", ta:"எடை அதிகரித்ததா?"}
+{id:"irregular_periods", en:"Are your periods irregular?", ta:"மாதவிடாய் முறையற்றதா?"},
+{id:"skipped_periods", en:"Have you skipped periods?", ta:"மாதவிடாய் தவறியதா?"},
+{id:"acne", en:"Do you have acne?", ta:"முகப்பரு உள்ளதா?"},
+{id:"facial_hair", en:"Excess facial hair?", ta:"முகத்தில் அதிக முடி உள்ளதா?"},
+{id:"weight_gain", en:"Weight gain?", ta:"எடை அதிகரித்ததா?"}
 ],
 
 breast: [
-{en:"Breast lump?", ta:"மார்பில் கட்டி உள்ளதா?"},
-{en:"Skin change?", ta:"தோல் மாற்றம் உள்ளதா?"},
-{en:"Discharge?", ta:"நீர்வருகிறதா?"}
+{id:"lump", en:"Do you feel a lump in breast?", ta:"மார்பில் கட்டி உள்ளதா?"},
+{id:"hard_lump", en:"Is the lump hard or fixed?", ta:"கட்டி கடினமா?"},
+{id:"shape_change", en:"Change in shape or size?", ta:"வடிவம் மாறியதா?"},
+{id:"skin_change", en:"Skin change?", ta:"தோல் மாற்றம் உள்ளதா?"},
+{id:"discharge", en:"Nipple discharge?", ta:"நீர்வருகிறதா?"}
 ],
 
 uti: [
-{en:"Burning urination?", ta:"எரிச்சல் உள்ளதா?"},
-{en:"Frequent urination?", ta:"அடிக்கடி சிறுநீர்?"},
-{en:"Lower pain?", ta:"வயிற்று வலி?"}
+{id:"burning", en:"Burning urination?", ta:"எரிச்சல் உள்ளதா?"},
+{id:"frequent", en:"Frequent urination?", ta:"அடிக்கடி சிறுநீர்?"},
+{id:"pain", en:"Lower abdominal pain?", ta:"வயிற்று வலி?"},
+{id:"fever", en:"Fever?", ta:"காய்ச்சல் உள்ளதா?"},
+{id:"blood", en:"Blood in urine?", ta:"ரத்தம் உள்ளதா?"}
 ]
 
 };
@@ -35,12 +40,11 @@ function setLang(l){
   renderHome();
 }
 
-// HOME SCREEN
+// HOME
 function renderHome(){
   app.innerHTML = `
     <div class="card">
       <h3>Select Health Area</h3>
-
       <button onclick="start('pcos')">PCOS / Hormonal</button>
       <button onclick="start('breast')">Breast Health</button>
       <button onclick="start('uti')">Urinary Issues</button>
@@ -48,7 +52,7 @@ function renderHome(){
   `;
 }
 
-// START SECTION
+// START
 function start(section){
   currentSection = section;
   step = 0;
@@ -63,13 +67,15 @@ function showQuestion(){
 
   if(step < qList.length){
 
-    let q = qList[step][lang];
+    let q = qList[step];
+
+    let text = q[lang];
 
     app.innerHTML = `
       <div class="card">
-        <h3>${q}</h3>
+        <h3>${text}</h3>
 
-        <button class="voice" onclick="speak('${q}')">🔊</button>
+        <button class="voice" onclick="speak('${text}')">🔊</button>
 
         <button onclick="answer('Yes')">Yes</button>
         <button onclick="answer('No')">No</button>
@@ -81,14 +87,21 @@ function showQuestion(){
   }
 }
 
-// SAVE ANSWER
+// SAVE ANSWER (IMPORTANT FIX)
 function answer(val){
-  answers.push(val);
+
+  let q = data[currentSection][step];
+
+  answers.push({
+    symptom: q.id,
+    value: val
+  });
+
   step++;
   showQuestion();
 }
 
-// AI ANALYSIS
+// AI ANALYSIS (STRONG VERSION)
 async function analyze(){
 
   app.innerHTML = `
@@ -97,19 +110,32 @@ async function analyze(){
     </div>
   `;
 
+  let symptomText = answers.map(a => `${a.symptom}: ${a.value}`).join("\n");
+
   let prompt = `
-You are a women's health assistant.
+You are a trained women's health assistant.
+
+Analyze ONLY based on given symptoms.
+Do NOT guess or assume missing data.
 
 Section: ${currentSection}
-Answers: ${answers.join(", ")}
 
-Give:
-- Possible condition
-- Reason
-- Risk level
-- Advice
+Symptoms:
+${symptomText}
 
-Also give Tamil explanation.
+Rules:
+- If weak evidence → say "uncertain"
+- If breast lump present → treat as high priority
+
+Output:
+
+Possible Condition:
+Reason (based on symptoms):
+Risk Level: Low / Moderate / High
+Red Flags:
+Advice:
+
+Also give simple Tamil explanation.
 `;
 
   try {
@@ -127,11 +153,11 @@ Also give Tamil explanation.
     showResult(data.choices[0].message.content);
 
   } catch {
-    app.innerHTML = "Error connecting AI";
+    app.innerHTML = "AI connection error";
   }
 }
 
-// RESULT SCREEN
+// RESULT
 function showResult(text){
 
   app.innerHTML = `
