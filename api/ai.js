@@ -5,11 +5,11 @@ export default async function handler(req, res) {
     const prompt = req.body.messages?.[0]?.content;
 
     if (!prompt) {
-      return res.status(400).json({ error: "No prompt" });
+      return res.status(400).json({ error: "No prompt provided" });
     }
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${process.env.GEMINI_KEY}`,
+      `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_KEY}`,
       {
         method: "POST",
         headers: {
@@ -18,7 +18,10 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           contents: [
             {
-              parts: [{ text: prompt }]
+              role: "user",
+              parts: [
+                { text: prompt }
+              ]
             }
           ]
         })
@@ -27,22 +30,18 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    console.log("FULL GEMINI RESPONSE:", JSON.stringify(data, null, 2));
+    console.log("Gemini RAW:", JSON.stringify(data, null, 2));
 
-    // ✅ SAFE PARSING (FIX)
     let aiText = "";
 
     if (data.candidates && data.candidates.length > 0) {
-      aiText = data.candidates[0]?.content?.parts?.map(p => p.text).join(" ");
+      aiText = data.candidates[0].content.parts
+        .map(p => p.text)
+        .join(" ");
     }
 
-    // ❌ BLOCKED CASE
     if (!aiText) {
-      if (data.promptFeedback) {
-        aiText = "Response blocked by safety system. Try simpler input.";
-      } else {
-        aiText = "AI did not return valid output. Please try again.";
-      }
+      aiText = "AI response empty. Check API key or quota.";
     }
 
     return res.status(200).json({
