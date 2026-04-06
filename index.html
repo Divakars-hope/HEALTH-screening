@@ -10,22 +10,18 @@
 
 <header>
   <h2>Women's Health AI</h2>
-  <p>🔒 Private • No Data Stored</p>
+  <p>Private • No Data Stored</p>
+
+  <div class="lang-toggle">
+    <button onclick="setLang('en')">EN</button>
+    <button onclick="setLang('ta')">தமிழ்</button>
+  </div>
 </header>
 
 <div class="container">
 
-  <!-- START -->
-  <div id="startCard" class="card">
-    <h3>Start Health Check</h3>
-    <button onclick="startQuiz()">Start</button>
-  </div>
-
-  <!-- QUESTIONS -->
-  <div id="quizCard" class="card hidden"></div>
-
-  <!-- RESULT -->
-  <div id="resultCard" class="card hidden"></div>
+  <!-- SCREEN CONTROLLER -->
+  <div id="app"></div>
 
 </div>
 
