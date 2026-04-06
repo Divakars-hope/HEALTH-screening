@@ -1,49 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Women's Health Screening</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Women's Health AI</title>
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<div class="container">
+<div class="app">
 
-  <h1>Women's Health Screening</h1>
+  <header>
+    <h1>Women's Health AI</h1>
+    <p class="sub">Smart Screening & Guidance</p>
+  </header>
+
+  <!-- Floating Symbol -->
+  <div class="floating">♀</div>
 
   <!-- Language -->
-  <div class="lang">
-    <button onclick="setLanguage('en')">English</button>
+  <div class="top-bar">
+    <button onclick="setLanguage('en')">EN</button>
     <button onclick="setLanguage('ta')">தமிழ்</button>
   </div>
 
   <!-- Sections -->
-  <div class="sections">
-    <button onclick="startSection('PCOD')">PCOD</button>
-    <button onclick="startSection('Breast')">Breast</button>
-    <button onclick="startSection('UTI')">UTI</button>
+  <div class="card-container">
+    <div class="card" onclick="startSection('PCOD')">PCOD</div>
+    <div class="card" onclick="startSection('Breast')">Breast</div>
+    <div class="card" onclick="startSection('UTI')">UTI</div>
   </div>
 
-  <!-- Question -->
-  <div id="questionBox"></div>
-
-  <!-- Result -->
+  <div id="questionBox" class="question-box"></div>
   <div id="result"></div>
 
-  <!-- Chatbot -->
-  <hr>
-  <h2>Ask Health Assistant</h2>
+  <!-- Chat -->
+  <div class="chat-section">
+    <h3>Ask AI</h3>
+    <div id="chatBox" class="chat-box"></div>
 
-  <div id="chatBox" class="chat-box"></div>
-
-  <div class="chat-input">
-    <input id="userInput" placeholder="Type your symptoms..." />
-    <button onclick="sendMessage()">Send</button>
+    <div class="chat-input">
+      <input id="userInput" placeholder="Type symptoms..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
   </div>
 
-  <p class="disclaimer">
+  <footer>
     This tool is for awareness only. Not a medical diagnosis.
-  </p>
+  </footer>
 
 </div>
 
