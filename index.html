@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Women's Health AI</title>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -11,43 +12,32 @@
 <div class="app">
 
   <header>
-    <h1>Women's Health AI</h1>
-    <p class="sub">Smart Screening & Guidance</p>
+    <h1>Health AI</h1>
+    <p>Women's Smart Screening</p>
   </header>
 
-  <!-- Floating Symbol -->
-  <div class="floating">♀</div>
-
-  <!-- Language -->
-  <div class="top-bar">
-    <button onclick="setLanguage('en')">EN</button>
-    <button onclick="setLanguage('ta')">தமிழ்</button>
+  <!-- Section Buttons -->
+  <div class="sections">
+    <button onclick="startSection('PCOD')">PCOD</button>
+    <button onclick="startSection('Breast')">Breast</button>
+    <button onclick="startSection('UTI')">UTI</button>
   </div>
 
-  <!-- Sections -->
-  <div class="card-container">
-    <div class="card" onclick="startSection('PCOD')">PCOD</div>
-    <div class="card" onclick="startSection('Breast')">Breast</div>
-    <div class="card" onclick="startSection('UTI')">UTI</div>
-  </div>
+  <!-- Question -->
+  <div id="questionBox"></div>
 
-  <div id="questionBox" class="question-box"></div>
+  <!-- Result -->
   <div id="result"></div>
 
   <!-- Chat -->
-  <div class="chat-section">
-    <h3>Ask AI</h3>
-    <div id="chatBox" class="chat-box"></div>
+  <div class="chat">
+    <div id="chatBox"></div>
 
-    <div class="chat-input">
-      <input id="userInput" placeholder="Type symptoms..." />
-      <button onclick="sendMessage()">Send</button>
+    <div class="input-area">
+      <input id="userInput" placeholder="Describe your symptoms..." />
+      <button onclick="sendMessage()">➤</button>
     </div>
   </div>
-
-  <footer>
-    This tool is for awareness only. Not a medical diagnosis.
-  </footer>
 
 </div>
 
