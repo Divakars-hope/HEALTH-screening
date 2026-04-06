@@ -1,27 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Women's Health AI</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>Women's Health Screening</title>
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
-<header>
-  <h2>Women's Health AI</h2>
-  <p>Private • No Data Stored</p>
-
-  <div class="lang-toggle">
-    <button onclick="setLang('en')">EN</button>
-    <button onclick="setLang('ta')">தமிழ்</button>
-  </div>
-</header>
 
 <div class="container">
 
-  <!-- SCREEN CONTROLLER -->
-  <div id="app"></div>
+  <h1>Women's Health Screening</h1>
+
+  <!-- Language -->
+  <div class="lang">
+    <button onclick="setLanguage('en')">English</button>
+    <button onclick="setLanguage('ta')">தமிழ்</button>
+  </div>
+
+  <!-- Sections -->
+  <div class="sections">
+    <button onclick="startSection('PCOD')">PCOD</button>
+    <button onclick="startSection('Breast')">Breast</button>
+    <button onclick="startSection('UTI')">UTI</button>
+  </div>
+
+  <!-- Question -->
+  <div id="questionBox"></div>
+
+  <!-- Result -->
+  <div id="result"></div>
+
+  <!-- Chatbot -->
+  <hr>
+  <h2>Ask Health Assistant</h2>
+
+  <div id="chatBox" class="chat-box"></div>
+
+  <div class="chat-input">
+    <input id="userInput" placeholder="Type your symptoms..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <p class="disclaimer">
+    This tool is for awareness only. Not a medical diagnosis.
+  </p>
 
 </div>
 
