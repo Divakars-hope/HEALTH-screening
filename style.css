@@ -1,41 +1,83 @@
 body {
-  font-family: Arial;
-  background: #f0f4f8;
   margin: 0;
+  font-family: Arial;
+  background: linear-gradient(to bottom, #eef2f7, #ffffff);
 }
 
-.container {
-  max-width: 500px;
+.app {
+  max-width: 420px;
   margin: auto;
-  padding: 20px;
+  padding: 15px;
+}
+
+header {
   text-align: center;
 }
 
-h1 {
-  color: #333;
+.sub {
+  font-size: 13px;
+  color: gray;
 }
 
+/* Floating Female Symbol */
+.floating {
+  position: fixed;
+  bottom: -50px;
+  right: 20px;
+  font-size: 40px;
+  color: #ff4da6;
+  animation: floatUp 6s infinite linear;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(0); opacity: 0.3; }
+  100% { transform: translateY(-600px); opacity: 0; }
+}
+
+/* Buttons */
 button {
-  margin: 6px;
-  padding: 10px 15px;
+  padding: 8px 12px;
+  margin: 5px;
   border: none;
-  background: #d63384;
+  background: #c2185b;
   color: white;
   border-radius: 6px;
   cursor: pointer;
 }
 
 button:hover {
-  background: #b82c6c;
+  background: #a3154a;
 }
 
+/* Cards */
+.card-container {
+  display: flex;
+}
+
+.card {
+  flex: 1;
+  margin: 5px;
+  padding: 15px;
+  background: white;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.card:hover {
+  background: #ffe4ec;
+}
+
+/* Question */
 .question-card {
   background: white;
   padding: 20px;
-  margin-top: 20px;
   border-radius: 10px;
+  margin-top: 20px;
 }
 
+/* Result */
 .result-card {
   background: #e6fff2;
   padding: 20px;
@@ -43,38 +85,31 @@ button:hover {
   border-radius: 10px;
 }
 
-.disclaimer {
-  font-size: 12px;
-  color: gray;
-  margin-top: 20px;
-}
-
 /* Chat */
 .chat-box {
-  background: white;
-  height: 250px;
+  height: 200px;
   overflow-y: auto;
+  background: white;
   padding: 10px;
   border-radius: 10px;
-  margin-top: 20px;
-  text-align: left;
 }
 
-.chat-user {
-  color: blue;
-  margin-bottom: 5px;
-}
-
-.chat-ai {
-  color: green;
-  margin-bottom: 10px;
-}
+.chat-user { color: blue; }
+.chat-ai { color: green; }
 
 .chat-input {
+  display: flex;
   margin-top: 10px;
 }
 
 .chat-input input {
+  flex: 1;
   padding: 8px;
-  width: 70%;
+}
+
+footer {
+  text-align: center;
+  font-size: 11px;
+  color: gray;
+  margin-top: 15px;
 }
