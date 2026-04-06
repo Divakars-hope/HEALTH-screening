@@ -1,43 +1,43 @@
+let lang = "en";
 let currentSection = "";
-let answers = [];
 let currentQuestionIndex = 0;
-let lang = "en"; // default English
+let answers = [];
+let chatHistory = [];
 
-// QUESTIONS WITH TAMIL
-const questions = [
-  {
-    en: "Are your periods irregular?",
-    ta: "உங்கள் மாதவிடாய் முறையற்றதா?"
-  },
-  {
-    en: "Do you have acne frequently?",
-    ta: "உங்களுக்கு அடிக்கடி முகப்பரு வருகிறதா?"
-  },
-  {
-    en: "Do you notice unwanted hair growth on face or body?",
-    ta: "முகம் அல்லது உடலில் அதிக முடி வளர்ச்சியை கவனித்தீர்களா?"
-  },
-  {
-    en: "Do you feel breast pain or notice any lump?",
-    ta: "மார்பில் வலி அல்லது கட்டி உள்ளதா?"
-  },
-  {
-    en: "Do you have burning sensation while urinating?",
-    ta: "சிறுநீர் கழிக்கும் போது எரிச்சல் உள்ளதா?"
-  }
-];
+// QUESTIONS
+const questionBank = {
 
-// LANGUAGE SWITCH
-function setLanguage(selectedLang) {
-  lang = selectedLang;
+  PCOD: [
+    { en: "Are your periods irregular?", ta: "மாதவிடாய் முறையற்றதா?", weight: 3 },
+    { en: "Do you have acne frequently?", ta: "முகப்பரு அடிக்கடி வருகிறதா?", weight: 2 },
+    { en: "Excess hair growth?", ta: "அதிக முடி வளர்ச்சியா?", weight: 3 },
+    { en: "Weight gain easily?", ta: "எளிதில் எடை அதிகரிக்கிறதா?", weight: 2 }
+  ],
+
+  Breast: [
+    { en: "Any breast lump?", ta: "மார்பில் கட்டி உள்ளதா?", weight: 5 },
+    { en: "Nipple discharge?", ta: "நிப்பிளில் வெளியேற்றம் உள்ளதா?", weight: 4 },
+    { en: "Persistent pain?", ta: "தொடர்ந்து வலி உள்ளதா?", weight: 3 }
+  ],
+
+  UTI: [
+    { en: "Burning urination?", ta: "சிறுநீரில் எரிச்சல் உள்ளதா?", weight: 3 },
+    { en: "Frequent urination?", ta: "அடிக்கடி சிறுநீர் போகிறதா?", weight: 2 },
+    { en: "Lower abdominal pain?", ta: "வயிற்று கீழ் வலி உள்ளதா?", weight: 2 }
+  ]
+};
+
+// LANGUAGE
+function setLanguage(l) {
+  lang = l;
   showQuestion();
 }
 
 // START
 function startSection(section) {
   currentSection = section;
-  answers = [];
   currentQuestionIndex = 0;
+  answers = [];
   document.getElementById("result").innerHTML = "";
   showQuestion();
 }
@@ -45,121 +45,142 @@ function startSection(section) {
 // SHOW QUESTION
 function showQuestion() {
 
-  if (currentQuestionIndex >= questions.length) {
+  let qList = questionBank[currentSection];
+
+  if (!qList || currentQuestionIndex >= qList.length) {
     analyzeAnswers();
     return;
   }
 
-  const q = questions[currentQuestionIndex][lang];
+  let q = qList[currentQuestionIndex][lang];
 
   document.getElementById("questionBox").innerHTML = `
     <div class="question-card">
       <p>${q}</p>
-
-      <button onclick="speak('${q}')">🔊</button>
-
-      <div class="btn-group">
-        <button onclick="selectAnswer('Yes')">Yes</button>
-        <button onclick="selectAnswer('No')">No</button>
-      </div>
+      <button onclick="speak('${q}')">🔊</button><br>
+      <button onclick="answer('Yes')">Yes</button>
+      <button onclick="answer('No')">No</button>
     </div>
   `;
 }
 
 // SAVE ANSWER
-function selectAnswer(answer) {
-
-  const q = questions[currentQuestionIndex];
+function answer(ans) {
+  let q = questionBank[currentSection][currentQuestionIndex];
 
   answers.push({
-    question_en: q.en,
-    question_ta: q.ta,
-    answer: answer
+    text: q.en,
+    answer: ans,
+    weight: q.weight
   });
 
   currentQuestionIndex++;
   showQuestion();
 }
 
+// RISK
+function calculateRisk() {
+  let score = 0;
+
+  answers.forEach(a => {
+    if (a.answer === "Yes") score += a.weight;
+  });
+
+  if (score >= 8) return "High";
+  if (score >= 4) return "Moderate";
+  return "Low";
+}
+
 // AI ANALYSIS
 async function analyzeAnswers() {
 
-  const symptomText = answers.map(a =>
-    `${a.question_en}: ${a.answer}`
-  ).join("\n");
+  let symptoms = answers.map(a => `${a.text}: ${a.answer}`).join("\n");
+  let risk = calculateRisk();
 
-  const prompt = `
+  let prompt = `
 You are a women's health assistant.
 
-Analyze symptoms carefully.
-
-Do NOT give final diagnosis.
-Give general guidance only.
-
 Section: ${currentSection}
+Risk Level: ${risk}
 
 Symptoms:
-${symptomText}
+${symptoms}
 
-Provide:
+Give:
+Possible Condition
+Reason
+Advice
 
-Possible Condition:
-Reason:
-Risk Level:
-Advice:
-
-Also give the explanation in simple Tamil.
+Also explain in Tamil.
 `;
 
   document.getElementById("questionBox").innerHTML = "Analyzing...";
 
-  try {
+  let res = await fetch("/api/ai", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ messages: [{ role: "user", content: prompt }] })
+  });
 
-    const response = await fetch("/api/ai", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        messages: [
-          { role: "user", content: prompt }
-        ]
-      })
-    });
+  let data = await res.json();
+  let output = data?.choices?.[0]?.message?.content || "AI failed";
 
-    const data = await response.json();
+  document.getElementById("result").innerHTML = `
+    <div class="result-card">
+      <h3>Result</h3>
+      <p><b>Risk Level:</b> ${risk}</p>
+      <p>${output}</p>
+      <button onclick="location.reload()">Restart</button>
+    </div>
+  `;
 
-    const result = data?.choices?.[0]?.message?.content;
-
-    document.getElementById("result").innerHTML = `
-      <div class="result-card">
-        <h3>Result / முடிவு</h3>
-        <p>${result || "AI analysis failed"}</p>
-        <button onclick="restart()">Restart</button>
-      </div>
-    `;
-
-    document.getElementById("questionBox").innerHTML = "";
-
-  } catch (error) {
-
-    document.getElementById("result").innerHTML = `
-      <p>Something went wrong</p>
-    `;
-  }
+  document.getElementById("questionBox").innerHTML = "";
 }
 
-// VOICE SUPPORT
+// VOICE
 function speak(text) {
   let msg = new SpeechSynthesisUtterance(text);
   msg.lang = (lang === "ta") ? "ta-IN" : "en-IN";
   speechSynthesis.speak(msg);
 }
 
-// RESTART
-function restart() {
-  answers = [];
-  currentQuestionIndex = 0;
-  document.getElementById("questionBox").innerHTML = "";
-  document.getElementById("result").innerHTML = "";
+// CHATBOT
+async function sendMessage() {
+
+  let input = document.getElementById("userInput");
+  let chatBox = document.getElementById("chatBox");
+
+  let text = input.value.trim();
+  if (!text) return;
+
+  chatBox.innerHTML += `<div class="chat-user"><b>You:</b> ${text}</div>`;
+  input.value = "";
+
+  chatHistory.push({ role: "user", content: text });
+
+  let conversation = chatHistory.map(m => `${m.role}: ${m.content}`).join("\n");
+
+  let prompt = `
+You are a women's health assistant.
+
+Conversation:
+${conversation}
+
+Reply in simple English and Tamil.
+`;
+
+  let res = await fetch("/api/ai", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ messages: [{ role: "user", content: prompt }] })
+  });
+
+  let data = await res.json();
+  let reply = data?.choices?.[0]?.message?.content || "No response";
+
+  chatBox.innerHTML += `<div class="chat-ai"><b>AI:</b> ${reply}</div>`;
+
+  chatHistory.push({ role: "ai", content: reply });
+
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
