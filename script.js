@@ -112,30 +112,28 @@ async function analyze(){
 
   let symptomText = answers.map(a => `${a.symptom}: ${a.value}`).join("\n");
 
-  let prompt = `
-You are a trained women's health assistant.
+ let prompt = `
+You are a simple women's health assistant.
 
-Analyze ONLY based on given symptoms.
-Do NOT guess or assume missing data.
+Analyze symptoms safely.
+
+Do not give diagnosis.
+Do not use strong medical claims.
 
 Section: ${currentSection}
 
 Symptoms:
 ${symptomText}
 
-Rules:
-- If weak evidence → say "uncertain"
-- If breast lump present → treat as high priority
-
-Output:
+Give:
 
 Possible Condition:
-Reason (based on symptoms):
-Risk Level: Low / Moderate / High
-Red Flags:
+Reason:
+Risk Level:
 Advice:
 
-Also give simple Tamil explanation.
+Keep it simple and clear.
+Also give Tamil explanation.
 `;
 
   try {
