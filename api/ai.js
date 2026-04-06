@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function (req, res) {
 
   try {
 
@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     }
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${process.env.GEMINI_KEY}`,
       {
         method: "POST",
         headers: {
@@ -18,10 +18,7 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           contents: [
             {
-              role: "user",
-              parts: [
-                { text: prompt }
-              ]
+              parts: [{ text: prompt }]
             }
           ]
         })
@@ -41,7 +38,7 @@ export default async function handler(req, res) {
     }
 
     if (!aiText) {
-      aiText = "AI response empty. Check API key or quota.";
+      aiText = "AI failed. Check API or quota.";
     }
 
     return res.status(200).json({
@@ -63,4 +60,4 @@ export default async function handler(req, res) {
       details: error.message
     });
   }
-}
+};
