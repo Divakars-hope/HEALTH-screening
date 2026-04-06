@@ -1,15 +1,11 @@
 export default async function handler(req, res) {
 
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
-
   try {
 
     const prompt = req.body.messages?.[0]?.content;
 
     if (!prompt) {
-      return res.status(400).json({ error: "No prompt provided" });
+      return res.status(400).json({ error: "No prompt" });
     }
 
     const response = await fetch(
@@ -31,12 +27,23 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    // DEBUG (very important)
-    console.log("Gemini response:", data);
+    console.log("FULL GEMINI RESPONSE:", JSON.stringify(data, null, 2));
 
-    const aiText =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "AI could not analyze properly.";
+    // ✅ SAFE PARSING (FIX)
+    let aiText = "";
+
+    if (data.candidates && data.candidates.length > 0) {
+      aiText = data.candidates[0]?.content?.parts?.map(p => p.text).join(" ");
+    }
+
+    // ❌ BLOCKED CASE
+    if (!aiText) {
+      if (data.promptFeedback) {
+        aiText = "Response blocked by safety system. Try simpler input.";
+      } else {
+        aiText = "AI did not return valid output. Please try again.";
+      }
+    }
 
     return res.status(200).json({
       choices: [
@@ -49,6 +56,7 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
+
     console.error("ERROR:", error);
 
     return res.status(500).json({
