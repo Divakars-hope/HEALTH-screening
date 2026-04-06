@@ -4,23 +4,14 @@ module.exports = async function (req, res) {
 
     const prompt = req.body.messages?.[0]?.content;
 
-    if (!prompt) {
-      return res.status(400).json({ error: "No prompt provided" });
-    }
-
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_KEY}`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [
-            {
-              role: "user",
-              parts: [{ text: prompt }]
-            }
+            { role: "user", parts: [{ text: prompt }] }
           ]
         })
       }
@@ -28,37 +19,15 @@ module.exports = async function (req, res) {
 
     const data = await response.json();
 
-    console.log("Gemini RAW:", JSON.stringify(data, null, 2));
+    const text =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "No AI response";
 
-    let aiText = "";
-
-    if (data.candidates && data.candidates.length > 0) {
-      aiText = data.candidates[0].content.parts
-        .map(p => p.text)
-        .join(" ");
-    }
-
-    if (!aiText) {
-      aiText = "AI response empty. Check API key or quota.";
-    }
-
-    return res.status(200).json({
-      choices: [
-        {
-          message: {
-            content: aiText
-          }
-        }
-      ]
+    res.status(200).json({
+      choices: [{ message: { content: text } }]
     });
 
-  } catch (error) {
-
-    console.error("ERROR:", error);
-
-    return res.status(500).json({
-      error: "Server error",
-      details: error.message
-    });
+  } catch {
+    res.status(500).json({ error: "Server error" });
   }
 };
